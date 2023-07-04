@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {#list的内容获取#}
+    <h1>模板语法的学习</h1>
+    <div>{{ n1 }}</div>
+
+    <div>{{ n2 }}</div>
+    {#取第1个元素#}
+    <div>{{ n2.0 }}</div>
+    {#取第2个元素#}
+    <div>{{ n2.1 }}</div>
+    {#取第3个元素#}
+    <div>{{ n2.2 }}</div>
+
+    {#循环语句#}
+    <div>
+        {% for item in n2 %}
+            <span>{{ item }}</span>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    {#字典内容获取#}
+    <div>{{ n3 }}</div>
+    {#    取第1个元素#}
+    <div>{{ n3.name }}</div>
+    {#    取第2个元素#}
+    <div>{{ n3.salary }}</div>
+    {#    取第3个元素#}
+    <div>{{ n3.role }}</div>
+
+    {#循环字典的键#}
+    <ul>
+        {% for item in n3.keys %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+
+    {#循环字典的键值对#}
+    <ul>
+        {% for k,v in n3.items %}
+            <li>{{ k }}={{ v }}</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <div>{{ n4.0 }}</div>
+    <div>{{ n4.0.name }}</div>
+
+    <hr>
+
+    {% if n1 == "哈哈" %}
+        <h1>hhhhhhh</h1>
+    {% elif n1 == "呼呼" %}
+        <h1>bbbbbb</h1>
+    {% else %}
+        <h1>aaaaaaaaaaaa</h1>
+    {% endif %}
+</body>
+</html>

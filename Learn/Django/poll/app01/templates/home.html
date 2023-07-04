@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .message {
+            height: 300px;
+            border: 1px solid #dddddd;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="message" id="message"></div>
+    <div>
+        <input type="text" placeholder="请输入" id="txt">
+        <input type="button" value="发送" onclick="sendMessage();">
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script>
+
+        function sendMessage() {
+            var text = $('#txt').val();
+
+            //基于ajax发送到后台
+            $.ajax({
+                url: '/send/msg/',
+                type: 'GET',
+                data: {
+                    text: text
+                },
+                {#接受服务器的响应#}
+                success: function (res) {
+                    console.log("发送成功", res)
+                }
+            })
+        }
+
+        max_index = 0
+
+        {#2s一次发送请求获取数据#}
+        setInterval(function () {
+            $.ajax({
+                url: '/get/msg/',
+                data: {
+                    index: max_index
+                },
+                type: 'GET',
+                success: function (res) {
+                    {#console.log("获取到的数据-->", res);#}
+                    {#将字符串转化为json数组#}
+                    //不用JSON.parse
+                    var dataDict = res;
+
+                    max_index = dataDict.max_index;
+
+                    $.each(dataDict.data, function (index, item) {
+                        console.log(index, item)
+                        //制作div标签
+                        var tag = $("<div>");
+                        tag.text(item);
+                        $("#message").append(tag);
+                    })
+                }
+            })
+        }, 2000)
+    </script>
+</body>
+</html>

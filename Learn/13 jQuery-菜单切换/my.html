@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+    <style>
+        .menus {
+            width: 200px;
+            height: 800px;
+            border: 1px solid red;
+        }
+
+        .menus .header {
+            background-color: gold;
+            padding: 10px 5px;
+            border-bottom: 1px dotted #dddddd;
+
+            /* 鼠标变成小手 */
+            cursor: pointer;
+        }
+
+        .menus .content a {
+            display: block;
+            padding: 5px 5px;
+            border-bottom: 1px dotted #dddddd;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="menus">
+        <div class="item">
+            <!-- this指向当前标签 -->
+            <div class="header" onclick="clickMe(this)">上海1</div>
+            <div class="content hide">
+                <a>宝山区</a>
+                <a>青浦区</a>
+                <a>黄埔区</a>
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="header" onclick="clickMe(this)">北京1</div>
+            <div class="content hide">
+                <a>海淀区</a>
+                <a>大兴区</a>
+                <a>朝阳区</a>
+            </div>
+        </div>
+
+        <div class="item">
+            <!-- this指向当前标签 -->
+            <div class="header" onclick="clickMe(this)">上海2</div>
+            <div class="content hide">
+                <a>宝山区</a>
+                <a>青浦区</a>
+                <a>黄埔区</a>
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="header" onclick="clickMe(this)">北京2</div>
+            <div class="content hide">
+                <a>海淀区</a>
+                <a>大兴区</a>
+                <a>朝阳区</a>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <script src="static/jquery-3.7.0.js"></script>
+    <script src="static/my.js"></script>
+</body>
+
+</html>

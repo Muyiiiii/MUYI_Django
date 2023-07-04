@@ -1,0 +1,130 @@
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>two.html</title>
+
+    <style type="text/css">
+        body {
+            background-color: rgb(32, 177, 212);
+            width: 100%;
+            height: 100%;
+        }
+
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #player {
+            height: 80%;
+            width: 55%;
+            position: absolute;
+            left: 5%;
+            top: 15%;
+            box-shadow: 5px 5px 10px 2px black;
+            -moz-box-shadow: 5px 5px 10px 2px black;
+            /* 老的 Firefox */
+            background-color: white;
+        }
+
+        #player > #video {
+            width: 100%;
+            height: 82.3%;
+            position: absolute;
+            top: 0;
+        }
+
+        #player > #name {
+            width: 100%;
+            height: 15%;
+            font-size: 30px;
+            font-family: 华文行楷;
+            position: absolute;
+            top: 83%;
+            overflow: auto;
+            left: 1%;
+        }
+
+        #player > #author {
+            width: 100%;
+            height: 3%;
+            font-size: 20px;
+            font-family: 隶书;
+            position: absolute;
+            bottom: 2%;
+            left: 2%;
+        }
+
+        #chat {
+            height: 80%;
+            width: 30%;
+            position: absolute;
+            left: 65%;
+            top: 15%;
+            box-shadow: 5px 5px 10px 2px black;
+            -moz-box-shadow: 5px 5px 10px 2px black;
+            /* 老的 Firefox */
+            background-color: white;
+        }
+    </style>
+
+</head>
+
+<body onload="init()">
+    <div id="player">
+        <video id="video" src="###" controls="controls" autoplay="autoplay"></video>
+        <div id="name">
+            <div class="message" id="message"></div>
+            <div>
+                <textarea type="text" placeholder="请输入" id="txt"></textarea>
+                <input type="button" value="发送" onclick="sendMessage();">
+                <input type="button" value="关闭" onclick="closeConn();">
+            </div>
+        </div>
+        <div id="author"></div>
+    </div>
+
+    <div id="chat">
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        //创建websocket连接，用户向客户端发送
+        socket = new WebSocket("ws://127.0.0.1:8000/room/{{ num }}/");
+
+        //连接刚连上时
+        socket.onopen = function (event) {
+            let tag = document.createElement("div");
+            tag.innerText = '[连接成功]';
+            document.getElementById("message").appendChild(tag);
+        }
+
+        socket.onclose = function (event) {
+            let tag = document.createElement("div");
+            tag.innerText = '[连接已关闭]';
+            document.getElementById("message").appendChild(tag);
+        }
+
+        //接收服务端的数据
+        socket.onmessage = function (event) {
+            let tag = document.createElement("div");
+            tag.innerText = event.data;
+            document.getElementById("message").appendChild(tag);
+        }
+
+        //客户端向服务端发送信息
+        function sendMessage() {
+            let tag = document.getElementById("txt");
+            let text = tag.value;
+            socket.send(text);
+        }
+
+        //关闭连接
+        function closeConn() {
+            socket.close();
+        }
+    </script>
+</body>
+
+</html>

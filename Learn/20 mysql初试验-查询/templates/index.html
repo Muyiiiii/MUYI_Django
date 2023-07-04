@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="./static/plugins/bootstrap-3.4.1-dist/css/bootstrap.css">
+</head>
+
+<body>
+    <div class="bs-example" data-example-id="bordered-table">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>{{title}}</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Username</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data_list %}
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>{{item}}</td>
+                    <td>@mdo</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="./static/js/jquery-3.7.0.js"></script>
+
+    <script src="./static/plugins/bootstrap-3.4.1-dist/js/bootstrap.js"></script>
+
+
+    <script src="./static/js/my.js"></script>
+</body>
+
+</html>
