@@ -82,6 +82,7 @@ from django import forms
 
 
 class UserModelForm(forms.ModelForm):
+    # 对输入信息增加新的校验
     name = forms.CharField(min_length=3, label="用户名")
 
     class Meta:
@@ -89,6 +90,7 @@ class UserModelForm(forms.ModelForm):
         model = models.UserInfo
         # 这是输入框里的信息
         fields = ["name", "password", "age", "account", "create_time", "gender", "depart"]
+        # 这是设置model form的原始属性，为单个属性增加class属性，但有些麻烦
         # widgets = {
         #     "name": forms.TextInput(attrs={"class": "form-control"})
         # }
@@ -110,8 +112,12 @@ def user_model_form_add(request):
         form = UserModelForm()
         return render(request, "user_model_form_add.html", {"form": form})
     else:
+        # 这里会自动的清洗数据
         form = UserModelForm(data=request.POST)
         if form.is_valid():
+            # 可以打印出来看
+            # print(form.cleaned_data)
+
             # 保存到数据库
             form.save()
             return redirect('/user/list/')

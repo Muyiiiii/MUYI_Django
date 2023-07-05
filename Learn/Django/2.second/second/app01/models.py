@@ -6,7 +6,7 @@ class Department(models.Model):
     '''部门表'''
     title = models.CharField(verbose_name="部门标题", max_length=32)
 
-    # 确定对象的输出结果
+    # 确定对象的输出结果，这是为了用modelform的时候直接输出部门名，而不是输出类名
     def __str__(self):
         return self.title
 
