@@ -3846,8 +3846,7 @@ def index(request):
   </form>
   ```
 
-
-## 3 样式的添加
+##### 1 样式的添加
 
 ```python
 class UserModelForm(forms.ModelForm):
@@ -3874,7 +3873,7 @@ class UserModelForm(forms.ModelForm):
 
 ```
 
-## 4 错误输入提示
+##### 2 错误输入提示
 
 - 错误提示设为中文需要修改`setting.py`
 
@@ -3916,12 +3915,13 @@ class UserModelForm(forms.ModelForm):
 
 
 
-## 5 对于输入数据的限制
+##### 3 对于输入数据的限制
 
 - **直接在类里面创建新的数据，同时添加数据限制**
 
   ```python
   class UserModelForm(forms.ModelForm):
+      # 对输入信息增加新的校验
       name = forms.CharField(min_length=3, label="用户名")
   
       class Meta:
@@ -3931,5 +3931,21 @@ class UserModelForm(forms.ModelForm):
           #     "name": forms.TextInput(attrs={"class": "form-control"})
           # }
   ```
-
   
+
+
+
+##### 4 对于数据库内容的修改
+
+```python
+# 去数据库获取当前nid对应的用户数据，这样子才能是更新数据，不确定用户的话，只会再一次添加一个新用户
+row_object = models.UserInfo.objects.filter(id=nid).first()
+form = UserModelForm(data=request.POST, instance=row_object)
+if form.is_valid():
+    # form.instance.字段名 = 值 # 这个可以保存新的值
+    # 这个只保存用户输入的数据
+    form.save()
+    redirect('/user/list/')
+return render(request, 'user_edit.html', {'form': form})
+```
+

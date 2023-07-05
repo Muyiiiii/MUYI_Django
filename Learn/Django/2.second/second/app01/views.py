@@ -123,3 +123,30 @@ def user_model_form_add(request):
             return redirect('/user/list/')
         else:
             return render(request, "user_model_form_add.html", {"form": form})
+
+
+def user_edit(request, nid):
+    '''编辑用户'''
+    if request.method == 'GET':
+        # 去数据库获取当前nid对应的用户数据
+        row_object = models.UserInfo.objects.filter(id=nid).first()
+
+        # 使用instance在form中加载这个用户的数据
+        form = UserModelForm(instance=row_object)
+
+        return render(request, 'user_edit.html', {'form': form})
+
+    # 去数据库获取当前nid对应的用户数据，这样子才能是更新数据，不确定用户的话，只会再一次添加一个新用户
+    row_object = models.UserInfo.objects.filter(id=nid).first()
+    form = UserModelForm(data=request.POST, instance=row_object)
+    if form.is_valid():
+        # form.instance.字段名 = 值 # 这个可以保存新的值
+        # 这个只保存用户输入的数据
+        form.save()
+        redirect('/user/list/')
+    return render(request, 'user_edit.html', {'form': form})
+
+
+def user_delete(request, nid):
+    models.UserInfo.objects.filter(id=nid).delete()
+    return redirect('/user/list/')
