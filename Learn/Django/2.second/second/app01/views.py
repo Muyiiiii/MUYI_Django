@@ -85,7 +85,9 @@ class UserModelForm(forms.ModelForm):
     name = forms.CharField(min_length=3, label="用户名")
 
     class Meta:
+        # 可以用model自动生成input框
         model = models.UserInfo
+        # 这是输入框里的信息
         fields = ["name", "password", "age", "account", "create_time", "gender", "depart"]
         # widgets = {
         #     "name": forms.TextInput(attrs={"class": "form-control"})
