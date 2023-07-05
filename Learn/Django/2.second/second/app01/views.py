@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from app01 import models
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 
 
 # Create your views here.
@@ -150,3 +152,58 @@ def user_edit(request, nid):
 def user_delete(request, nid):
     models.UserInfo.objects.filter(id=nid).delete()
     return redirect('/user/list/')
+
+
+def pretty_list(request):
+    '''靓号列表'''
+    # 使用数据库里的level进行排序，-level表示倒序排序
+    queryset = models.PrettyNum.objects.all().order_by("-level")
+
+    return render(request, 'pretty_list.html', {'queryset': queryset})
+
+
+class PrettyModelForm(forms.ModelForm):
+    # 验证方式一:正则方法
+    # mobile = forms.CharField(
+    #     label="手机号",
+    #     validators=[RegexValidator(r'^159[0-9]+$', '手机号必须以159开头的11位数字')],
+    # )
+
+    # 验证方式二:自调用函数，钩子方法
+    # 函数名：clean_字段名
+    def clean_mobile(self):
+        txt_mobile = self.cleaned_data['mobile']
+        if len(txt_mobile) != 11:
+            raise ValidationError("格式错误")
+
+        return txt_mobile
+
+    class Meta:
+        model = models.PrettyNum
+        # 可以用新的写法实现获取所有的字段
+        # fields = ['mobile', 'price', 'status', 'level']
+        fields = "__all__"
+
+        # exclude = ['level']  # 排除level
+
+    # 源码增改
+    # 循环添加样式
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            field.widget.attrs = {"class": "form-control", "placeholder": field.label}
+
+
+def pretty_add(request):
+    '''添加靓号'''
+
+    if request.method == 'GET':
+        form = PrettyModelForm()
+        return render(request, 'pretty_model_form_add.html', {'form': form})
+    else:
+        form = PrettyModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/pretty/list/')
+        else:
+            return render(request, 'pretty_model_form_add.html', {'form': form})

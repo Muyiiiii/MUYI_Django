@@ -3949,3 +3949,25 @@ if form.is_valid():
 return render(request, 'user_edit.html', {'form': form})
 ```
 
+
+
+##### 5 对数据的排序
+
+```python
+# 使用数据库里的level进行排序，-level表示倒序排序
+models.PrettyNum.objects.all().order_by("-level")
+```
+
+
+
+##### 6 样式添加的补充
+
+```python
+class Meta:
+    model = models.PrettyNum
+    # 可以用新的写法实现获取所有的字段
+    # fields = ['mobile', 'price', 'status', 'level']
+    fields = "__all__"
+    # exclude = ['level']  # 排除level
+```
+

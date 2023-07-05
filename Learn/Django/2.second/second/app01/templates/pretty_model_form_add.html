@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">新建靓号</h3>
+            </div>
+            <div class="panel-body">
+                <form method="post" action="/pretty/add/" novalidate>
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="form-group">
+                            {#label是输入位置的名称#}
+                            <label>{{ field.label }}</label>
+                            {# 等价于 <input type="text" class="form-control" placeholder="姓名" name="user">#}
+                            {{ field }}
+                            {#                            输出错误信息的列表#}
+                            <span style="color:red;"> {{ field.errors.0 }}</span>
+                        </div>
+
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-primary">提 交</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{#<form method="post">#}
+{#    {% csrf_token %}#}
+{##}
+{#        {{ form.name.label }}: {{ form.name }}#}
+{#        {{ form.password.label }}: {{ form.password }}#}
+{#        {{ form.age.label }}: {{ form.age }}#}
+{##}
+{#    {% for field in form %}#}
+{#        {{ field.label }}: {{ field }}#}
+{#    {% endfor %}#}
+{##}
+{#</form>#}
