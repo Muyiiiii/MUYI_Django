@@ -3933,6 +3933,45 @@ class UserModelForm(forms.ModelForm):
   ```
   
 
+```python
+# 将mobile设置成不可修改
+mobile = forms.CharField(disabled=True, label='手机号')
+```
+
+```python
+# 验证方式一:正则方法
+mobile = forms.CharField(
+    label="手机号",
+    validators=[RegexValidator(r'^159[0-9]+$', '手机号必须以159开头的11位数字')],
+)
+
+
+# 验证方式二:自调用函数，钩子方法
+# 函数名：clean_字段名
+def clean_mobile(self):
+    txt_mobile = self.cleaned_data['mobile']
+    if len(txt_mobile) != 11:
+        raise ValidationError("格式错误")
+
+    return txt_mobile
+```
+
+```python
+# 排除自己
+def clean_mobile(self):
+    txt_mobile = self.cleaned_data['mobile']
+
+    # 编辑的靓号不允许重复，要排除自己
+    exists = models.PrettyNum.objects.exclude(id=self.instance.pk).filter(mobile=txt_mobile).exists()
+    if exists:
+        raise ValidationError('手机号已存在')
+
+    if len(txt_mobile) != 11:
+        raise ValidationError("格式错误")
+
+    return txt_mobile
+```
+
 
 
 ##### 4 对于数据库内容的修改
@@ -3969,5 +4008,48 @@ class Meta:
     # fields = ['mobile', 'price', 'status', 'level']
     fields = "__all__"
     # exclude = ['level']  # 排除level
+```
+
+
+
+##### 7 搜索
+
+```python
+# 添加GET方式的搜索
+data_dict = {}
+# 如果没传q,data就是空字符串，后面的值就是默认值，此时会显示所有的数据
+search_data = request.GET.get('q', "")
+if search_data:
+    data_dict['mobile__contains'] = search_data
+```
+
+
+
+```python
+models.PrettyNum.objects.filter(mobile='11111111',id=1)
+
+# 或者
+data_dict = {'mobile':'1111111','id':123}
+models.PrettyNum.objects.filter(**data_dict)
+
+# 空字典就是所有的数据
+```
+
+```python
+models.PrettyNum.objects.filter(id=12)			# 等于12
+models.PrettyNum.objects.filter(id_gt=12)		# 大于12
+models.PrettyNum.objects.filter(id_gte=12)		# 大于等于12
+models.PrettyNum.objects.filter(id_lt=12)		# 小于12
+models.PrettyNum.objects.filter(id_lte=12)		# 小于等于12
+
+# 也可以用字典
+```
+
+```python
+models.PrettyNum.objects.filter(mobile__startswith='111')		# 以什么什么开头
+models.PrettyNum.objects.filter(mobile__endswith='111')			# 以什么什么结尾
+models.PrettyNum.objects.filter(mobile__contains='111')			# 包含什么什么
+
+# 也可以用字典
 ```
 

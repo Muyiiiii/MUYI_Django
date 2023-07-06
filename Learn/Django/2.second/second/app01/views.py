@@ -156,23 +156,37 @@ def user_delete(request, nid):
 
 def pretty_list(request):
     '''靓号列表'''
-    # 使用数据库里的level进行排序，-level表示倒序排序
-    queryset = models.PrettyNum.objects.all().order_by("-level")
 
-    return render(request, 'pretty_list.html', {'queryset': queryset})
+    # 添加GET方式的搜索
+    data_dict = {}
+    # 如果没传q,data就是空字符串，后面的值就是默认值，此时会显示所有的数据
+    search_data = request.GET.get('q', "")
+    if search_data:
+        data_dict['mobile__contains'] = search_data
+
+    # 使用数据库里的level进行排序，-level表示倒序排序
+    queryset = models.PrettyNum.objects.filter(**data_dict).order_by("-level")
+
+    return render(request, 'pretty_list.html', {'queryset': queryset, 'search_data': search_data})
 
 
 class PrettyModelForm(forms.ModelForm):
     # 验证方式一:正则方法
-    # mobile = forms.CharField(
-    #     label="手机号",
-    #     validators=[RegexValidator(r'^159[0-9]+$', '手机号必须以159开头的11位数字')],
-    # )
+    mobile = forms.CharField(
+        label="手机号",
+        validators=[RegexValidator(r'^159[0-9]+$', '手机号必须以159开头的11位数字')],
+    )
 
     # 验证方式二:自调用函数，钩子方法
     # 函数名：clean_字段名
     def clean_mobile(self):
         txt_mobile = self.cleaned_data['mobile']
+
+        # 添加的靓号不允许重复
+        exists = models.PrettyNum.objects.filter(mobile=txt_mobile).exists()
+        if exists:
+            raise ValidationError('手机号已存在')
+
         if len(txt_mobile) != 11:
             raise ValidationError("格式错误")
 
@@ -207,3 +221,46 @@ def pretty_add(request):
             return redirect('/pretty/list/')
         else:
             return render(request, 'pretty_model_form_add.html', {'form': form})
+
+
+class PrettyEditModelForm(forms.ModelForm):
+    # 将mobile设置成不可修改
+    mobile = forms.CharField(disabled=True, label='手机号')
+
+    def clean_mobile(self):
+        txt_mobile = self.cleaned_data['mobile']
+
+        # 编辑的靓号不允许重复，要排除自己
+        exists = models.PrettyNum.objects.exclude(id=self.instance.pk).filter(mobile=txt_mobile).exists()
+        if exists:
+            raise ValidationError('手机号已存在')
+
+        if len(txt_mobile) != 11:
+            raise ValidationError("格式错误")
+
+        return txt_mobile
+
+    class Meta:
+        model = models.PrettyNum
+        # 可以用新的写法实现获取所有的字段
+        fields = ['mobile', 'price', 'status', 'level']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            field.widget.attrs = {"class": "form-control", "placeholder": field.label}
+
+
+def pretty_edit(request, nid):
+    '''编辑靓号'''
+    row_object = models.PrettyNum.objects.filter(id=nid).first()
+
+    if request.method == 'GET':
+        form = PrettyEditModelForm(instance=row_object)
+        return render(request, 'pretty_edit.html', {'form': form})
+
+    form = PrettyEditModelForm(data=request.POST, instance=row_object)
+    if form.is_valid():
+        form.save()
+        return redirect('/pretty/list/')
+    return render(request, 'pretty_edit.html', {'form': form})
